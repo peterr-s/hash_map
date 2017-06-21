@@ -35,6 +35,7 @@ void hash_map_init(hash_map* map, unsigned long int(* hash_fn)(void* key), bool(
 void hash_map_put(hash_map* map, void* key, void* value);
 void* hash_map_get(hash_map* map, void* key);
 void hash_map_drop(hash_map* map, void* key);
+void hash_map_destroy(hash_map* map);
 
 unsigned long int default_hash(void* key);
 unsigned long int string_hash(void* key);

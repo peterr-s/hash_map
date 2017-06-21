@@ -124,6 +124,28 @@ void hash_map_drop(hash_map* map, void* key)
 	}
 }
 
+/* destroys a hashmap (does not touch pointed data) */
+void hash_map_destroy(hash_map* map)
+{
+	node* current,
+		* next;
+	
+	/* goes down each list, deleting all nodes */
+	for(i = 0; i < map->table_len; i++)
+	{
+		current = map->table[i];
+		while(current)
+		{
+			next = current->next;
+			free(current);
+			current = next;
+		}
+	}
+	
+	/* deletes the table */
+	free(map->table);
+}
+
 /* simple "hash" function (uses pointer as hash code) */
 unsigned long int default_hash(void* key)
 {
