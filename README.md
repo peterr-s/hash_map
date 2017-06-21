@@ -33,4 +33,4 @@ note that `table` should then be a zero-filled array of length table_len.
 
 A hash function should take a `void*` as its only argument and return a hash of type `unsigned long int`. An equality function should take two `void*`s and return a `bool` (`true` if equal). Default hash and equality functions (`default_hash` and `default_eq`) are provided which work on pointers and thus are only effective when comparing an instance to itself. String equality and hash functions (`string_hash` and `string_eq`) are also provided which work on values.
 
-`hash_map_destroy` takes a hash map as an argument and destroys it. This only affects the map itself, not the contained data, since the whole thing works on pointers. This is, however, necessary since the C spec does not technically require heap memory to be returned on exit.
+`hash_map_destroy` takes a hash map as an argument and destroys it. This only affects the map itself, not the contained data, since the whole thing works on pointers.
