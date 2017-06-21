@@ -115,6 +115,7 @@ void hash_map_drop(hash_map* map, void* key)
 			else
 				map->table[idx] = current->next;
 			free(current); /* nodes are always malloc'ed */
+			map->element_ct --;
 			return;
 		}
 		

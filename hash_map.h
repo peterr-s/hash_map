@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #define DEFAULT_LOAD_FACTOR 10.75
 #define DEFAULT_LEN 10
