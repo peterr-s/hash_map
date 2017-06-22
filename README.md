@@ -21,7 +21,7 @@ This file defines a `hash_map` structure and basic methods to manipulate it. The
     	unsigned long int element_ct;
     };
 
-note that `table` should then be a zero-filled array of length table_len.
+note that `table` should then be a zero-filled array of length `table_len`.
 
 `DEFAULT_TABLE_LEN` is defined as 10, and `DEFAULT_LOAD_FACTOR` is defined as 0.75.
 
