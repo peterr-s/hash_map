@@ -25,7 +25,7 @@ note that `table` should then be a zero-filled array of length `table_len`.
 
 `DEFAULT_TABLE_LEN` is defined as 10, and `DEFAULT_LOAD_FACTOR` is defined as 0.75.
 
-##### basic manipulation functions
+##### Safe Manipulation Functions
 
 `hash_map_add`, aliased as `add`, takes a pointer to a hash map, a pointer to a key, and a pointer to its associated value. If the key already exists its value is overwritten, else it's created.
 
@@ -33,7 +33,7 @@ note that `table` should then be a zero-filled array of length `table_len`.
 
 `hash_map_drop`, aliased as `drop`, takes a pointer to a hash map and a pointer to a key. It removes the key and its value from the map if present, else is a no-op.
 
-##### fast manipulation functions
+##### Fast Manipulation Functions
 
 Because there might be cases where the hash function is faster than the equality function and has a very low chance of collisions, there are also functions that use hash equality instead of normal equality. This also saves one hash function call when compared to using something like
 
@@ -44,9 +44,9 @@ Because there might be cases where the hash function is faster than the equality
 
 because the hash function is already called once when looking for the appropriate cell.
 
-The functions are `hash_map_fast_add`, `hash_map_fast_get`, and `hash_map_fast_drop`, and have the same return values and arguments as their safe counterparts.
+The functions are `hash_map_fast_add`, `hash_map_fast_get`, and `hash_map_fast_drop`, and have the same return types and arguments as their safe counterparts.
 
-##### equality and hashing functions
+##### Equality and Hashing Functions
 
 A hash function should take a `void*` as its only argument and return a hash of type `unsigned long int`. An equality function should take two `void*`s and return a `bool` (`true` if equal). Default hash and equality functions (`default_hash` and `default_eq`) are provided which work on pointers and thus are only effective when comparing an instance to itself. String equality and hash functions (`string_hash` and `string_eq`) are also provided which work on values.
 
