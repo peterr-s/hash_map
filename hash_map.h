@@ -1,7 +1,6 @@
 #ifndef HASH_MAP_H
 #define HASH_MAP_H
 
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -11,6 +10,11 @@
 #define put hash_map_put
 #define get hash_map_get
 #define drop hash_map_drop
+
+/* stdbool.h is not required by C89 */
+typedef unsigned char bool;
+#define false 0
+#define true !false
 
 typedef struct node node;
 struct node
