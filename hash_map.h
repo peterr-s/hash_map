@@ -32,13 +32,19 @@ struct hash_map
 };
 
 void hash_map_init(hash_map* map, unsigned long int(* hash_fn)(void* key), bool(* eq_fn)(void* p1, void* p2), unsigned long int start_len, float load_factor);
+void hash_map_destroy(hash_map* map);
+
 void hash_map_put(hash_map* map, void* key, void* value);
 void* hash_map_get(hash_map* map, void* key);
 void hash_map_drop(hash_map* map, void* key);
-void hash_map_destroy(hash_map* map);
+
+void hash_map_fast_put(hash_map* map, void* key, void* value);
+void* hash_map_fast_get(hash_map* map, void* key);
+void hash_map_fast_drop(hash_map* map, void* key);
 
 unsigned long int default_hash(void* key);
 unsigned long int string_hash(void* key);
+
 bool default_eq(void* p1, void* p2);
 bool string_eq(void* p1, void* p2);
 
