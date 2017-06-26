@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define DEFAULT_LOAD_FACTOR 10.75
+#define DEFAULT_LOAD_FACTOR 0.75
 #define DEFAULT_LEN 10
 
 #define put hash_map_put

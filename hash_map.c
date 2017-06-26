@@ -18,6 +18,7 @@ void hash_map_put(hash_map* map, void* key, void* value)
 		* s_node;
 	unsigned long int node_idx;
 	
+	/* perform resize and rehash if necessary */
 	if((++ map->element_ct) / map->table_len > map->load_factor)
 	{
 		size_t n_len = map->table_len << 1;
@@ -203,7 +204,44 @@ void hash_map_drop(hash_map* map, void* key)
 			else
 				map->table[idx] = current->next;
 			free(current); /* nodes are always malloc'ed */
-			map->element_ct --;
+			
+			/* perform resize and rehash if necessary */
+			if((map->table_len > 10) && (-- map->element_ct) / (map->table_len << 1) < map->load_factor)
+			{
+				size_t n_len = map->table_len >> 1;
+				node** temp = calloc(n_len, sizeof(node*));
+				
+				/* for each element in the table */
+				for(i = 0; i < map->table_len; i ++)
+				{
+					/* traverse down the linked list */
+					node* current,
+						* next;
+					
+					/* guard against empty elements */
+					current = map->table[i];
+					while(current)
+					{
+						unsigned long int npos;
+						
+						/* prepare lookahead pointer */
+						next = current->next;
+						
+						/* rehash and copy each item */
+						npos = (map->hash_fn(current->key)) % n_len;
+						current->next = temp[npos];
+						temp[npos] = current;
+						
+						/* advance to next list element */
+						current = next;
+					}
+				}
+				
+				free(map->table);
+				map->table = temp;
+				map->table_len = n_len;
+			}
+			
 			return;
 		}
 		
@@ -234,7 +272,44 @@ void hash_map_fast_drop(hash_map* map, void* key)
 			else
 				map->table[idx] = current->next;
 			free(current); /* nodes are always malloc'ed */
-			map->element_ct --;
+			
+			/* perform resize and rehash if necessary */
+			if((map->table_len > 10) && (-- map->element_ct) / (map->table_len << 1) < map->load_factor)
+			{
+				size_t n_len = map->table_len >> 1;
+				node** temp = calloc(n_len, sizeof(node*));
+				
+				/* for each element in the table */
+				for(i = 0; i < map->table_len; i ++)
+				{
+					/* traverse down the linked list */
+					node* current,
+						* next;
+					
+					/* guard against empty elements */
+					current = map->table[i];
+					while(current)
+					{
+						unsigned long int npos;
+						
+						/* prepare lookahead pointer */
+						next = current->next;
+						
+						/* rehash and copy each item */
+						npos = (map->hash_fn(current->key)) % n_len;
+						current->next = temp[npos];
+						temp[npos] = current;
+						
+						/* advance to next list element */
+						current = next;
+					}
+				}
+				
+				free(map->table);
+				map->table = temp;
+				map->table_len = n_len;
+			}
+			
 			return;
 		}
 		
