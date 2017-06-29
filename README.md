@@ -2,7 +2,7 @@
 
 I couldn't find a general-purpose cross-platform C hash map implementation and needed one for a project I'm working on, so I wrote one. If it can be of use to you, have at it.
 
-Everything is absolutely standards compliant C89 with no assumptions whatsoever about undefined behavior.
+Everything is absolutely standards compliant C89 with no assumptions about implementation-defined behavior.
 
 #### Usage
 
@@ -51,3 +51,13 @@ The functions are `hash_map_fast_add`, `hash_map_fast_get`, and `hash_map_fast_d
 A hash function should take a `void*` as its only argument and return a hash of type `unsigned long int`. An equality function should take two `void*`s and return a `bool` (`true` if equal). Default hash and equality functions (`default_hash` and `default_eq`) are provided which work on pointers and thus are only effective when comparing an instance to itself. String equality and hash functions (`string_hash` and `string_eq`) are also provided which work on values.
 
 `hash_map_destroy` takes a hash map as an argument and destroys it. This only affects the structure of map itself, not the contained data, since the whole thing works on pointers. If the map was itself created on the heap, it also needs to be freed separately.
+
+##### I/O functions
+
+There are also three I/O functions added in hash_map_io.h, separately from the rest because in many cases they won't be needed. In case you do need them, they are as follows:
+
+`hash_map_write` takes a stream, a hash map, and the sizes of the keys and values. The load factor, element count, and elements are saved to the file. The function does not directly set `ferror`; if it is set, the value corresponds to an error encountered by `fwrite`. The function returns `HM_ERR_STREAM` if it encounters a stream error, `HM_ERR_HEAD` if it encounters an error writing the load factor or size, or one more than the index within the underlying table if it fails while writing an element. On success, it returns 0.
+
+`hash_map_read` takes a stream, a hash map, and the sizes of the keys and values. The map *must* be initialized before this function is called. The load factor, element count, and elements are loaded from the file. The function does not directly set `ferror`; if it is set, the value corresponds to an error encountered by `fread`. The function returns `HM_ERR_STREAM` if it encounters a stream error, `HM_ERR_HEAD` if it encounters an error writing the load factor or size, or one more than the index within the file if it fails while reading an element. On success, it returns 0.
+
+`hash_map_fast_read` is the same as `hash_map_read` except that it uses `hash_map_fast_put` and therefore saves equality checks at the expense of safety.
