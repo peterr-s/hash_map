@@ -29,7 +29,9 @@ note that `table` should then be a zero-filled array of length `table_len`.
 
 ##### Safe Manipulation Functions
 
-`hash_map_add`, aliased as `add`, takes a pointer to a hash map, a pointer to a key, and a pointer to its associated value. If the key already exists its value is overwritten, else it's created. On success, this function returns `0`. If a memory allocation error occurs, it returns `HM_ERR_ALLOC`.
+`hash_map_put`, aliased as `put`, takes a pointer to a hash map, a pointer to a key, and a pointer to its associated value. If the key already exists its value is overwritten, else it's created. On success, this function returns `0`. If a memory allocation error occurs, it returns `HM_ERR_ALLOC`.
+
+`hash_map_put_destroy` is the same as `hash_map_put` unless the key already exists in the map, in which case it is deallocated before being overwritten.
 
 `hash_map_get`, aliased as `get`, takes a pointer to a hash map and a pointer to a key. It returns a pointer to the associated value if the key exists. If not, it returns NULL.
 
@@ -46,7 +48,7 @@ Because there might be cases where the hash function is faster than the equality
 
 because the hash function is already called once when looking for the appropriate cell.
 
-The functions are `hash_map_fast_add`, `hash_map_fast_get`, and `hash_map_fast_drop`, and have the same return types and arguments as their safe counterparts.
+The functions are `hash_map_fast_put`, `hash_map_fast_put_destroy` `hash_map_fast_get`, and `hash_map_fast_drop`, and have the same return types and arguments as their safe counterparts.
 
 ##### Equality and Hashing Functions
 

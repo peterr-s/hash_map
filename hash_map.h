@@ -42,10 +42,12 @@ short int hash_map_init(hash_map* map, unsigned long int(* hash_fn)(void* key), 
 void hash_map_destroy(hash_map* map);
 
 short int hash_map_put(hash_map* map, void* key, void* value);
+short int hash_map_put_destroy(hash_map* map, void* key, void* value);
 void* hash_map_get(hash_map* map, void* key);
 short int hash_map_drop(hash_map* map, void* key);
 
 short int hash_map_fast_put(hash_map* map, void* key, void* value);
+short int hash_map_fast_put_destroy(hash_map* map, void* key, void* value);
 void* hash_map_fast_get(hash_map* map, void* key);
 short int hash_map_fast_drop(hash_map* map, void* key);
 

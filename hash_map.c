@@ -162,6 +162,159 @@ short int hash_map_fast_put(hash_map* map, void* key, void* value)
 	map->table[node_idx] = n_node;
 }
 
+/* same as hash_map_put but destroys the pointed element on overwrite */
+short int hash_map_put_destroy(hash_map* map, void* key, void* value)
+{
+	node* n_node,
+		* s_node;
+	unsigned long int node_idx;
+	
+	/* perform resize and rehash if necessary */
+	if((++ map->element_ct) / map->table_len > map->load_factor)
+	{
+		size_t n_len = map->table_len << 1;
+		node** temp = calloc(n_len, sizeof(node*));
+		if(!temp)
+			return HM_ERR_ALLOC;
+		
+		/* for each element in the table */
+		for(i = 0; i < map->table_len; i ++)
+		{
+			/* traverse down the linked list */
+			node* current,
+				* next;
+			
+			/* guard against empty elements */
+			current = map->table[i];
+			while(current)
+			{
+				unsigned long int npos;
+				
+				/* prepare lookahead pointer */
+				next = current->next;
+				
+				/* rehash and copy each item */
+				npos = (map->hash_fn(current->key)) % n_len;
+				current->next = temp[npos];
+				temp[npos] = current;
+				
+				/* advance to next list element */
+				current = next;
+			}
+		}
+		
+		free(map->table);
+		map->table = temp;
+		map->table_len = n_len;
+	}
+	
+	/* check whether item is already in map */
+	node_idx = (*map->hash_fn)(key) % map->table_len;
+	s_node = map->table[node_idx];
+	while(s_node)
+	{
+		if((map->eq_fn)(s_node->key, key))
+		{
+			/* deallocate value */
+			free(s_node->value);
+			
+			/* update value and return */
+			s_node->value = value;
+			return 0;
+		}
+		s_node = s_node->next;
+	}
+	
+	/* create a new node to hold data */
+	n_node = malloc(sizeof(node));
+	if(!n_node)
+		return HM_ERR_ALLOC;
+	n_node->key = key;
+	n_node->value = value;
+	n_node->next = map->table[node_idx];
+	
+	/* add new node to table */
+	map->table[node_idx] = n_node;
+	
+	return 0;
+}
+
+/* same as above, but replaces equality check with hash equality check */
+short int hash_map_fast_put_destroy(hash_map* map, void* key, void* value)
+{
+	node* n_node,
+		* s_node;
+	unsigned long int node_idx,
+		node_hash;
+	
+	if((++ map->element_ct) / map->table_len > map->load_factor)
+	{
+		size_t n_len = map->table_len << 1;
+		node** temp = calloc(n_len, sizeof(node*));
+		if(!temp)
+			return HM_ERR_ALLOC;
+		
+		/* for each element in the table */
+		for(i = 0; i < map->table_len; i ++)
+		{
+			/* traverse down the linked list */
+			node* current,
+				* next;
+			
+			/* guard against empty elements */
+			current = map->table[i];
+			while(current)
+			{
+				unsigned long int npos;
+				
+				/* prepare lookahead pointer */
+				next = current->next;
+				
+				/* rehash and copy each item */
+				npos = (map->hash_fn(current->key)) % n_len;
+				current->next = temp[npos];
+				temp[npos] = current;
+				
+				/* advance to next list element */
+				current = next;
+			}
+		}
+		
+		free(map->table);
+		map->table = temp;
+		map->table_len = n_len;
+	}
+	
+	/* check whether item is already in map */
+	node_hash = (*map->hash_fn)(key);
+	node_idx = node_hash % map->table_len;
+	s_node = map->table[node_idx];
+	while(s_node)
+	{
+		if(node_hash == (map->hash_fn)(s_node->key))
+		{
+			/* free pointed value */
+			free(s_node->value);
+			
+			/* update value and return */
+			s_node->value = value;
+			return 0;
+		}
+		s_node = s_node->next;
+	}
+	
+	/* create a new node to hold data */
+	n_node = malloc(sizeof(node));
+	if(!n_node)
+		return HM_ERR_ALLOC;
+	n_node->key = key;
+	n_node->value = value;
+	n_node->next = map->table[node_idx];
+	
+	/* add new node to table */
+	map->table[node_idx] = n_node;
+}
+
 /* get the value associated with a key
  * returns NULL if key does not exist in map
  */
