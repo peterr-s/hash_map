@@ -1,18 +1,22 @@
 #include "hash_map.h"
 
 /* initialize a hash map structure */
-void hash_map_init(hash_map* map, unsigned long int(* hash_fn)(void* key), bool(* eq_fn)(void* p1, void* p2), unsigned long int start_len, float load_factor)
+short int hash_map_init(hash_map* map, unsigned long int(* hash_fn)(void* key), bool(* eq_fn)(void* p1, void* p2), unsigned long int start_len, float load_factor)
 {
-	map->table = calloc(start_len, sizeof(node*)); /* C spec guarantees that (void*)(0) must evaluate to a NULL pointer even if the implementation uses a different NULL definition */
+	map->table = calloc(start_len, sizeof(node*));
+	if(!map->table)
+		return HM_ERR_ALLOC;
 	map->hash_fn = hash_fn;
 	map->eq_fn = eq_fn;
 	map->table_len = start_len;
 	map->load_factor = load_factor;
 	map->element_ct = 0;
+	
+	return 0;
 }
 
 /* add a key-value pair to a hash map, resizing and rehashing if necessary */
-void hash_map_put(hash_map* map, void* key, void* value)
+short int hash_map_put(hash_map* map, void* key, void* value)
 {
 	node* n_node,
 		* s_node;
@@ -23,6 +27,8 @@ void hash_map_put(hash_map* map, void* key, void* value)
 	{
 		size_t n_len = map->table_len << 1;
 		node** temp = calloc(n_len, sizeof(node*));
+		if(!temp)
+			return HM_ERR_ALLOC;
 		
 		/* for each element in the table */
 		for(i = 0; i < map->table_len; i ++)
@@ -64,23 +70,27 @@ void hash_map_put(hash_map* map, void* key, void* value)
 		{
 			/* update value and return if found */
 			s_node->value = value;
-			return;
+			return 0;
 		}
 		s_node = s_node->next;
 	}
 	
 	/* create a new node to hold data */
 	n_node = malloc(sizeof(node));
+	if(!n_node)
+		return HM_ERR_ALLOC;
 	n_node->key = key;
 	n_node->value = value;
 	n_node->next = map->table[node_idx];
 	
 	/* add new node to table */
 	map->table[node_idx] = n_node;
+	
+	return 0;
 }
 
 /* same as above, but replaces equality check with hash equality check */
-void hash_map_fast_put(hash_map* map, void* key, void* value)
+short int hash_map_fast_put(hash_map* map, void* key, void* value)
 {
 	node* n_node,
 		* s_node;
@@ -91,6 +101,8 @@ void hash_map_fast_put(hash_map* map, void* key, void* value)
 	{
 		size_t n_len = map->table_len << 1;
 		node** temp = calloc(n_len, sizeof(node*));
+		if(!temp)
+			return HM_ERR_ALLOC;
 		
 		/* for each element in the table */
 		for(i = 0; i < map->table_len; i ++)
@@ -133,13 +145,15 @@ void hash_map_fast_put(hash_map* map, void* key, void* value)
 		{
 			/* update value and return if found */
 			s_node->value = value;
-			return;
+			return 0;
 		}
 		s_node = s_node->next;
 	}
 	
 	/* create a new node to hold data */
 	n_node = malloc(sizeof(node));
+	if(!n_node)
+		return HM_ERR_ALLOC;
 	n_node->key = key;
 	n_node->value = value;
 	n_node->next = map->table[node_idx];
@@ -187,7 +201,7 @@ void* hash_map_fast_get(hash_map* map, void* key)
 }
 
 /* removes an item from the hashmap if present (else no-op) */
-void hash_map_drop(hash_map* map, void* key)
+short int hash_map_drop(hash_map* map, void* key)
 {
 	node* current,
 		* parent = NULL;
@@ -210,6 +224,8 @@ void hash_map_drop(hash_map* map, void* key)
 			{
 				size_t n_len = map->table_len >> 1;
 				node** temp = calloc(n_len, sizeof(node*));
+				if(!temp)
+					return HM_ERR_ALLOC;
 				
 				/* for each element in the table */
 				for(i = 0; i < map->table_len; i ++)
@@ -242,16 +258,19 @@ void hash_map_drop(hash_map* map, void* key)
 				map->table_len = n_len;
 			}
 			
-			return;
+			/* stop looking since node was found */
+			return 0;
 		}
 		
 		parent = current;
 		current = current->next;
 	}
+	
+	return HM_W_NOTFOUND;
 }
 
 /* same as above, but replaces equality check with hash equality check */
-void hash_map_fast_drop(hash_map* map, void* key)
+short int hash_map_fast_drop(hash_map* map, void* key)
 {
 	node* current,
 		* parent = NULL;
@@ -278,6 +297,8 @@ void hash_map_fast_drop(hash_map* map, void* key)
 			{
 				size_t n_len = map->table_len >> 1;
 				node** temp = calloc(n_len, sizeof(node*));
+				if(!temp)
+					return HM_ERR_ALLOC;
 				
 				/* for each element in the table */
 				for(i = 0; i < map->table_len; i ++)
@@ -310,12 +331,15 @@ void hash_map_fast_drop(hash_map* map, void* key)
 				map->table_len = n_len;
 			}
 			
-			return;
+			/* stop looking since node was found */
+			return 0;
 		}
 		
 		parent = current;
 		current = current->next;
 	}
+	
+	return HM_W_NOTFOUND;
 }
 
 /* destroys a hashmap (does not touch pointed data) */

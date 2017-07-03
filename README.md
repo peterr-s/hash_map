@@ -2,13 +2,15 @@
 
 I couldn't find a general-purpose cross-platform C hash map implementation and needed one for a project I'm working on, so I wrote one. If it can be of use to you, have at it.
 
-Everything is absolutely standards compliant C89 with no assumptions about implementation-defined behavior.
+Everything is absolutely standards compliant C89 with no assumptions about implementation-defined behavior. It will also compile as C99 or C11.
 
 #### Usage
 
 This file defines a `hash_map` structure and basic methods to manipulate it. The hash map works entirely with void pointers, so it does not create additional copies of data that is added to it or destroy elements that are removed.
 
-`hash_map_init` takes a pointer to a hash map, a pointer to a hash function, a pointer to an equality function, a start size for the internal table, and a load factor. Alternatively it is possible to populate the fields manually:
+`hash_map_init` takes a pointer to a hash map, a pointer to a hash function, a pointer to an equality function, a start size for the internal table, and a load factor. On success it returns `0`. If it encounters an error when attempting to allocate memory for the table, it returns `HM_ERR_ALLOC`.
+
+Alternatively it is possible to populate the fields manually:
 
     typedef struct hash_map hash_map;
     struct hash_map
@@ -27,11 +29,11 @@ note that `table` should then be a zero-filled array of length `table_len`.
 
 ##### Safe Manipulation Functions
 
-`hash_map_add`, aliased as `add`, takes a pointer to a hash map, a pointer to a key, and a pointer to its associated value. If the key already exists its value is overwritten, else it's created.
+`hash_map_add`, aliased as `add`, takes a pointer to a hash map, a pointer to a key, and a pointer to its associated value. If the key already exists its value is overwritten, else it's created. On success, this function returns `0`. If a memory allocation error occurs, it returns `HM_ERR_ALLOC`.
 
 `hash_map_get`, aliased as `get`, takes a pointer to a hash map and a pointer to a key. It returns a pointer to the associated value if the key exists. If not, it returns NULL.
 
-`hash_map_drop`, aliased as `drop`, takes a pointer to a hash map and a pointer to a key. It removes the key and its value from the map if present, else is a no-op.
+`hash_map_drop`, aliased as `drop`, takes a pointer to a hash map and a pointer to a key. It removes the key and its value from the map if present, else returns `HM_WARN_NOTFOUND`. On success, this function returns `0`. If a memory allocation error occurs, it returns `HM_ERR_ALLOC`.
 
 ##### Fast Manipulation Functions
 
