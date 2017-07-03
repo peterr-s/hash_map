@@ -33,7 +33,7 @@ note that `table` should then be a zero-filled array of length `table_len`.
 
 `hash_map_get`, aliased as `get`, takes a pointer to a hash map and a pointer to a key. It returns a pointer to the associated value if the key exists. If not, it returns NULL.
 
-`hash_map_drop`, aliased as `drop`, takes a pointer to a hash map and a pointer to a key. It removes the key and its value from the map if present, else returns `HM_WARN_NOTFOUND`. On success, this function returns `0`. If a memory allocation error occurs, it returns `HM_ERR_ALLOC`.
+`hash_map_drop`, aliased as `drop`, takes a pointer to a hash map and a pointer to a key. It removes the key and its value from the map if present, else returns `HM_W_NOTFOUND`. On success, this function returns `0`. If a memory allocation error occurs, it returns `HM_ERR_ALLOC`.
 
 ##### Fast Manipulation Functions
 
