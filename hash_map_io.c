@@ -183,7 +183,7 @@ int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* strea
 		void** key;
 		void** value;
 		
-		if(read_fn(stream, key, value) != 1)
+		if(read_fn(stream, *key, *value) != 1)
 			return i;
 		
 		hash_map_put(map, *key, *value);
