@@ -180,13 +180,13 @@ int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* strea
 	/* read each key followed by its value */
 	for(i = 0; i < map->element_ct; i ++)
 	{
-		void* key;
-		void* value;
+		void** key;
+		void** value;
 		
 		if(read_fn(stream, key, value) != 1)
 			return i;
 		
-		hash_map_put(map, key, value);
+		hash_map_put(map, *key, *value);
 	}
 	
 	return 0;

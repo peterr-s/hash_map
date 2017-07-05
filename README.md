@@ -1,4 +1,4 @@
-### hash_map.h
+### hash\_map.h
 
 I couldn't find a general-purpose cross-platform C hash map implementation and needed one for a project I'm working on, so I wrote one. If it can be of use to you, have at it.
 
@@ -56,9 +56,9 @@ A hash function should take a `void*` as its only argument and return a hash of 
 
 `hash_map_destroy` takes a pointer to a hash map as an argument and destroys it. This only affects the structure of map itself, not the contained data, since the whole thing works on pointers. If the map was itself created on the heap, it also needs to be freed separately.
 
-### hash_map_io.h
+### hash\_map\_io.h
 
-There are also five I/O functions added in hash_map_io.h, separately from the rest because in many cases they won't be needed. In case you do need them, they are as follows:
+There are also five I/O functions added in hash\_map\_io.h, separately from the rest because in many cases they won't be needed. In case you do need them, they are as follows:
 
 ##### Basic I/O Functions
 
@@ -80,4 +80,4 @@ There are also five I/O functions added in hash_map_io.h, separately from the re
 
 The function passed to `hash_map_custom_write` should take a stream, a pointer to a key, and a pointer to a value. It should return `1` (the value of `&` on the return values from the two `fwrite()` invocations, assuming nothing else is written) on success and any other value otherwise.
 
-The function passed to `hash_map_custom_read` should take a stream, a pointer to a key, and a pointer to a value. It should return `1` on success and any other value otherwise.
+The function passed to `hash_map_custom_read` should take a stream, a pointer to a pointer to a key, and a pointer to a pointer to a value. The pointers should be set to point to pointers to the key and value, respectively. This is done because `hash_map_custom_read` is not aware of the sizes of the values pointed to, and can thus not allocate appropriate memory. The function should return `1` on success and any other value otherwise.
