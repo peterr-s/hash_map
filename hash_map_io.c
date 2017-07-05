@@ -159,7 +159,7 @@ int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* str
 	return 0;
 }
 
-int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void* key, void* value))
+int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void** key, void** value))
 {
 	/* check if file is properly open */
 	if(!stream)
