@@ -78,6 +78,6 @@ There are also five I/O functions added in hash_map_io.h, separately from the re
 
 ##### Externally Defined I/O Functions
 
-The function passed to `hash_map_custom_write` should take a stream, a pointer to a key, and a pointer to a value. It should return `1` (the value of `&` on the return values from the two `write()` invocations, assuming nothing else is written) on success and any other value otherwise.
+The function passed to `hash_map_custom_write` should take a stream, a pointer to a key, and a pointer to a value. It should return `1` (the value of `&` on the return values from the two `fwrite()` invocations, assuming nothing else is written) on success and any other value otherwise.
 
 The function passed to `hash_map_custom_read` should take a stream, a pointer to a key, and a pointer to a value. It should return `1` on success and any other value otherwise.
