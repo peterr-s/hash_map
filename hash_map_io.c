@@ -31,8 +31,10 @@ int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		node* current = map->table[i];
 		while(current)
 		{
+			int key_return_value = fwrite(current->key, key_sz, 1, stream); /* this is used to force a sequence point so that the key is written before the value*/
+			
 			/* ensure that both the key and its value are written successfully*/
-			if((fwrite(current->key, key_sz, 1, stream) & fwrite(current->value, value_sz, i, stream)) != 1)
+			if((key_return_value & fwrite(current->value, value_sz, i, stream)) != 1)
 				return i + 1;
 			
 			current = current->next;
@@ -74,7 +76,9 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		void* key;
 		void* value;
 		
-		if((fread(key, key_sz, 1, stream) & fread(value, value_sz, 1, stream)) != 1)
+		int key_return_value = fread(key, key_sz, 1, stream); /* this is used to force a sequence point */
+		
+		if((key_return_value & fread(value, value_sz, 1, stream)) != 1)
 			return i;
 		
 		hash_map_put(map, key, value);
@@ -109,7 +113,9 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 		void* key;
 		void* value;
 		
-		if((fread(key, key_sz, 1, stream) & fread(value, value_sz, 1, stream)) != 1)
+		int key_return_value = fread(key, key_sz, 1, stream); /* this is used to force a sequence point */
+		
+		if((key_return_value & fread(value, value_sz, 1, stream)) != 1)
 			return i;
 		
 		hash_map_fast_put(map, key, value);
