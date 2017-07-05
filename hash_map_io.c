@@ -31,9 +31,9 @@ int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		node* current = map->table[i];
 		while(current)
 		{
-			int key_return_value = fwrite(current->key, key_sz, 1, stream); /* this is used to force a sequence point so that the key is written before the value*/
+			int key_return_value = fwrite(current->key, key_sz, 1, stream); /* this is used to force a sequence point so that the key is written before the value */
 			
-			/* ensure that both the key and its value are written successfully*/
+			/* ensure that both the key and its value are written successfully */
 			if((key_return_value & fwrite(current->value, value_sz, i, stream)) != 1)
 				return i + 1;
 			
@@ -124,7 +124,7 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 	return 0;
 }
 
-int hash_map_custom_write(FILE* stream, hash_map* map, void(* write_fn)(FILE* stream, void* key, void* value))
+int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* stream, void* key, void* value))
 {
 	/* check if file is properly open */
 	if(!stream)
@@ -148,8 +148,8 @@ int hash_map_custom_write(FILE* stream, hash_map* map, void(* write_fn)(FILE* st
 		node* current = map->table[i];
 		while(current)
 		{
-			/* ensure that both the key and its value are written successfully*/
-			if(write_fn(stream, current->key, current->value)) != 1)
+			/* ensure that both the key and its value are written successfully */
+			if(write_fn(stream, current->key, current->value) != 1)
 				return i + 1;
 			
 			current = current->next;
@@ -159,7 +159,7 @@ int hash_map_custom_write(FILE* stream, hash_map* map, void(* write_fn)(FILE* st
 	return 0;
 }
 
-int hash_map_custom_read(FILE* stream, hash_map* map, void(* read_fn)(FILE* stream, void* key, void* value))
+int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void* key, void* value))
 {
 	/* check if file is properly open */
 	if(!stream)
