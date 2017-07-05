@@ -117,3 +117,71 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 	
 	return 0;
 }
+
+int hash_map_custom_write(FILE* stream, hash_map* map, void(* write_fn)(FILE* stream, void* key, void* value))
+{
+	/* check if file is properly open */
+	if(!stream)
+		return HM_ERR_STREAM;
+	if(ferror(stream))
+		return HM_ERR_STREAM;
+	if(feof(stream))
+		return HM_ERR_STREAM;
+	
+	/* write load factor */
+	if(fwrite(&(map->load_factor), sizeof(float), 1, stream) != 1)
+		return HM_ERR_IO_HEAD;
+	
+	/* write number of elements */
+	if(fwrite(&(map->element_ct), sizeof(unsigned long int), 1, stream) != 1)
+		return HM_ERR_IO_HEAD;
+	
+	/* write each key followed by its value */
+	for(i = 0; i < map->table_len; i ++)
+	{
+		node* current = map->table[i];
+		while(current)
+		{
+			/* ensure that both the key and its value are written successfully*/
+			if(write_fn(stream, current->key, current->value)) != 1)
+				return i + 1;
+			
+			current = current->next;
+		}
+	}
+	
+	return 0;
+}
+
+int hash_map_custom_read(FILE* stream, hash_map* map, void(* read_fn)(FILE* stream, void* key, void* value))
+{
+	/* check if file is properly open */
+	if(!stream)
+		return HM_ERR_STREAM;
+	if(ferror(stream))
+		return HM_ERR_STREAM;
+	if(feof(stream))
+		return HM_ERR_STREAM;
+	
+	/* read load factor */
+	if(fread(&(map->load_factor), sizeof(float), 1, stream) != 1)
+		return HM_ERR_IO_HEAD;
+	
+	/* read number of elements */
+	if(fread(&(map->element_ct), sizeof(unsigned long int), 1, stream) != 1)
+		return HM_ERR_IO_HEAD;
+	
+	/* read each key followed by its value */
+	for(i = 0; i < map->element_ct; i ++)
+	{
+		void* key;
+		void* value;
+		
+		if(read_fn(stream, key, value) != 1)
+			return i;
+		
+		hash_map_put(map, key, value);
+	}
+	
+	return 0;
+}
