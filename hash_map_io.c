@@ -69,7 +69,7 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		return HM_ERR_IO_HEAD;
 	
 	/* read number of elements */
-	if(fread(map->element_ct, sizeof(unsigned long int), 1, stream) != 1)
+	if(fread(&element_ct, sizeof(unsigned long int), 1, stream) != 1)
 		return HM_ERR_IO_HEAD;
 	
 	/* read each key followed by its value */
@@ -112,7 +112,7 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 		return HM_ERR_IO_HEAD;
 	
 	/* read each key followed by its value */
-	for(i = 0; i < map->element_ct; i ++)
+	for(i = 0; i < element_ct; i ++)
 	{
 		void* key = malloc(key_sz);
 		void* value = malloc(value_sz);
