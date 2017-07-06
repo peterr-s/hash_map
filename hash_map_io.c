@@ -73,8 +73,8 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 	/* read each key followed by its value */
 	for(i = 0; i < map->element_ct; i ++)
 	{
-		void* key;
-		void* value;
+		void* key = malloc(key_sz);
+		void* value = malloc(value_sz);
 		
 		int key_return_value = fread(key, key_sz, 1, stream); /* this is used to force a sequence point */
 		
@@ -110,8 +110,8 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 	/* read each key followed by its value */
 	for(i = 0; i < map->element_ct; i ++)
 	{
-		void* key;
-		void* value;
+		void* key = malloc(key_sz);
+		void* value = malloc(value_sz);
 		
 		int key_return_value = fread(key, key_sz, 1, stream); /* this is used to force a sequence point */
 		
