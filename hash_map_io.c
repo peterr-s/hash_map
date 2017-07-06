@@ -41,7 +41,7 @@ int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		}
 	}
 	
-	return 0;
+	return i;
 }
 
 /* read a hash map from a file
@@ -86,7 +86,7 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		hash_map_put(map, key, value);
 	}
 	
-	return 0;
+	return i;
 }
 
 /* same as above, but uses hash_map_fast_put instead of hash_map_put
@@ -125,7 +125,7 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 		hash_map_fast_put(map, key, value);
 	}
 	
-	return 0;
+	return i;
 }
 
 int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* stream, void* key, void* value))
@@ -160,7 +160,7 @@ int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* str
 		}
 	}
 	
-	return 0;
+	return i;
 }
 
 int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void** key, void** value))
@@ -198,5 +198,5 @@ int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* strea
 		free(value);
 	}
 	
-	return 0;
+	return i;
 }
