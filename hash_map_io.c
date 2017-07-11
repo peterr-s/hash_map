@@ -34,7 +34,7 @@ int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 			int key_return_value = fwrite(current->key, key_sz, 1, stream); /* this is used to force a sequence point so that the key is written before the value */
 			
 			/* ensure that both the key and its value are written successfully */
-			if((key_return_value & fwrite(current->value, value_sz, i, stream)) != 1)
+			if((key_return_value & fwrite(current->value, value_sz, 1, stream)) != 1)
 				return i + 1;
 			
 			current = current->next;
