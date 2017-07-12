@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #define HM_ERR_ALLOC 1
 #define HM_W_NOTFOUND 2
 
@@ -58,5 +63,9 @@ bool default_eq(void* p1, void* p2);
 bool string_eq(void* p1, void* p2);
 
 unsigned long int i, j;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
