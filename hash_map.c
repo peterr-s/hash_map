@@ -23,13 +23,18 @@ short int hash_map_put(hash_map* map, void* key, void* value)
 	unsigned long int node_idx;
 	
 	/* perform resize and rehash if necessary */
-	if((++ map->element_ct) / map->table_len > map->load_factor)
+	if(((float)(++ map->element_ct)) / map->table_len > map->load_factor)
 	{
+		unsigned long int i;
+		
 		size_t n_len = map->table_len << 1;
 		node** temp = calloc(n_len, sizeof(node*));
 		if(!temp)
+		{
+			map->element_ct --;
 			return HM_ERR_ALLOC;
-		
+		}
+
 		/* for each element in the table */
 		for(i = 0; i < map->table_len; i ++)
 		{
@@ -68,6 +73,8 @@ short int hash_map_put(hash_map* map, void* key, void* value)
 	{
 		if((map->eq_fn)(s_node->key, key))
 		{
+			map->element_ct --;
+
 			/* update value and return if found */
 			s_node->value = value;
 			return 0;
@@ -97,12 +104,17 @@ short int hash_map_fast_put(hash_map* map, void* key, void* value)
 	unsigned long int node_idx,
 		node_hash;
 	
-	if((++ map->element_ct) / map->table_len > map->load_factor)
+	if(((float)(++ map->element_ct)) / map->table_len > map->load_factor)
 	{
+		unsigned long int i;
+		
 		size_t n_len = map->table_len << 1;
 		node** temp = calloc(n_len, sizeof(node*));
 		if(!temp)
+		{
+			map->element_ct --;
 			return HM_ERR_ALLOC;
+		}
 		
 		/* for each element in the table */
 		for(i = 0; i < map->table_len; i ++)
@@ -143,6 +155,8 @@ short int hash_map_fast_put(hash_map* map, void* key, void* value)
 	{
 		if(node_hash == (map->hash_fn)(s_node->key))
 		{
+			map->element_ct --;
+
 			/* update value and return if found */
 			s_node->value = value;
 			return 0;
@@ -170,12 +184,17 @@ short int hash_map_put_destroy(hash_map* map, void* key, void* value)
 	unsigned long int node_idx;
 	
 	/* perform resize and rehash if necessary */
-	if((++ map->element_ct) / map->table_len > map->load_factor)
+	if(((float)(++ map->element_ct)) / map->table_len > map->load_factor)
 	{
+		unsigned long int i;
+		
 		size_t n_len = map->table_len << 1;
 		node** temp = calloc(n_len, sizeof(node*));
 		if(!temp)
+		{
+			map->element_ct --;
 			return HM_ERR_ALLOC;
+		}
 		
 		/* for each element in the table */
 		for(i = 0; i < map->table_len; i ++)
@@ -215,6 +234,8 @@ short int hash_map_put_destroy(hash_map* map, void* key, void* value)
 	{
 		if((map->eq_fn)(s_node->key, key))
 		{
+			map->element_ct --;
+			
 			/* deallocate value */
 			free(s_node->value);
 			
@@ -247,13 +268,18 @@ short int hash_map_fast_put_destroy(hash_map* map, void* key, void* value)
 	unsigned long int node_idx,
 		node_hash;
 	
-	if((++ map->element_ct) / map->table_len > map->load_factor)
+	if(((float)(++ map->element_ct)) / map->table_len > map->load_factor)
 	{
+		unsigned long int i;
+		
 		size_t n_len = map->table_len << 1;
 		node** temp = calloc(n_len, sizeof(node*));
 		if(!temp)
+		{
+			map->element_ct --;
 			return HM_ERR_ALLOC;
-		
+		}
+
 		/* for each element in the table */
 		for(i = 0; i < map->table_len; i ++)
 		{
@@ -293,6 +319,8 @@ short int hash_map_fast_put_destroy(hash_map* map, void* key, void* value)
 	{
 		if(node_hash == (map->hash_fn)(s_node->key))
 		{
+			map->element_ct --;
+
 			/* free pointed value */
 			free(s_node->value);
 			
@@ -375,6 +403,8 @@ short int hash_map_drop(hash_map* map, void* key)
 			/* perform resize and rehash if necessary */
 			if((map->table_len > 10) && (-- map->element_ct) / (map->table_len << 1) < map->load_factor)
 			{
+				unsigned long int i;
+				
 				size_t n_len = map->table_len >> 1;
 				node** temp = calloc(n_len, sizeof(node*));
 				if(!temp)
@@ -448,6 +478,8 @@ short int hash_map_fast_drop(hash_map* map, void* key)
 			/* perform resize and rehash if necessary */
 			if((map->table_len > 10) && (-- map->element_ct) / (map->table_len << 1) < map->load_factor)
 			{
+				unsigned long int i;
+				
 				size_t n_len = map->table_len >> 1;
 				node** temp = calloc(n_len, sizeof(node*));
 				if(!temp)
@@ -498,6 +530,7 @@ short int hash_map_fast_drop(hash_map* map, void* key)
 /* destroys a hashmap (does not touch pointed data) */
 void hash_map_destroy(hash_map* map)
 {
+	unsigned long int i;
 	node* current,
 		* next;
 	

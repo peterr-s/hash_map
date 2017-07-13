@@ -62,8 +62,6 @@ unsigned long int string_hash(void* key);
 bool default_eq(void* p1, void* p2);
 bool string_eq(void* p1, void* p2);
 
-unsigned long int i, j;
-
 #ifdef __cplusplus
 }
 #endif

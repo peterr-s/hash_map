@@ -9,6 +9,8 @@
  */
 int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 {
+	unsigned long int i;
+	
 	/* check if file is properly open */
 	if(!stream)
 		return HM_ERR_STREAM;
@@ -54,7 +56,8 @@ int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
  */
 int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 {
-	unsigned long int element_ct;
+	unsigned long int i,
+		element_ct;
 
 	/* check if file is properly open */
 	if(!stream)
@@ -73,7 +76,7 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		return HM_ERR_IO_HEAD;
 	
 	/* read each key followed by its value */
-	for(i = 0; i < element_ct; i ++)
+	for(i = 0; i <= element_ct; i ++)
 	{
 		void* key = malloc(key_sz);
 		void* value = malloc(value_sz);
@@ -83,9 +86,9 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		if((key_return_value & fread(value, value_sz, 1, stream)) != 1)
 			return i;
 		
-		hash_map_put(map, key, value);
+		if(hash_map_put(map, key, value))
+			return i;
 	}
-	
 	return i;
 }
 
@@ -93,7 +96,8 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
  */
 int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 {
-	unsigned long int element_ct;
+	unsigned long int i,
+		element_ct;
 
 	/* check if file is properly open */
 	if(!stream)
@@ -112,7 +116,7 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 		return HM_ERR_IO_HEAD;
 	
 	/* read each key followed by its value */
-	for(i = 0; i < element_ct; i ++)
+	for(i = 0; i <= element_ct; i ++)
 	{
 		void* key = malloc(key_sz);
 		void* value = malloc(value_sz);
@@ -122,7 +126,8 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 		if((key_return_value & fread(value, value_sz, 1, stream)) != 1)
 			return i;
 		
-		hash_map_fast_put(map, key, value);
+		if(hash_map_fast_put(map, key, value))
+			return i;
 	}
 	
 	return i;
@@ -130,6 +135,8 @@ int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_
 
 int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* stream, void* key, void* value))
 {
+	unsigned long int i;
+	
 	/* check if file is properly open */
 	if(!stream)
 		return HM_ERR_STREAM;
@@ -165,7 +172,8 @@ int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* str
 
 int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void** key, void** value))
 {
-	unsigned long int element_ct;
+	unsigned long int i,
+		element_ct;
 
 	/* check if file is properly open */
 	if(!stream)
@@ -184,7 +192,7 @@ int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* strea
 		return HM_ERR_IO_HEAD;
 	
 	/* read each key followed by its value */
-	for(i = 0; i < element_ct; i ++)
+	for(i = 0; i <= element_ct; i ++)
 	{
 		void** key = malloc(sizeof(void*));
 		void** value = malloc(sizeof(void*));
@@ -192,7 +200,8 @@ int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* strea
 		if(read_fn(stream, key, value) != 1)
 			return i;
 		
-		hash_map_put(map, *key, *value);
+		if(hash_map_put(map, *key, *value))
+			return i;
 
 		free(key);
 		free(value);
