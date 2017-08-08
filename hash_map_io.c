@@ -54,7 +54,7 @@ int hash_map_write(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
  * returns 1 more than the index within the file if an error is encountered while reading data
  * returns 0 if hash map is read successfully
  */
-int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
+int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz, unsigned short int flags)
 {
 	unsigned long int i,
 		element_ct;
@@ -86,50 +86,9 @@ int hash_map_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
 		if((key_return_value & fread(value, value_sz, 1, stream)) != 1)
 			return i;
 		
-		if(hash_map_put(map, key, value))
+		if(hash_map_put(map, key, value, flags))
 			return i;
 	}
-	return i;
-}
-
-/* same as above, but uses hash_map_fast_put instead of hash_map_put
- */
-int hash_map_fast_read(FILE* stream, hash_map* map, size_t key_sz, size_t value_sz)
-{
-	unsigned long int i,
-		element_ct;
-
-	/* check if file is properly open */
-	if(!stream)
-		return HM_ERR_STREAM;
-	if(ferror(stream))
-		return HM_ERR_STREAM;
-	if(feof(stream))
-		return HM_ERR_STREAM;
-	
-	/* read load factor */
-	if(fread(&(map->load_factor), sizeof(float), 1, stream) != 1)
-		return HM_ERR_IO_HEAD;
-	
-	/* read number of elements */
-	if(fread(&element_ct, sizeof(unsigned long int), 1, stream) != 1)
-		return HM_ERR_IO_HEAD;
-	
-	/* read each key followed by its value */
-	for(i = 0; i < element_ct; i ++)
-	{
-		void* key = malloc(key_sz);
-		void* value = malloc(value_sz);
-		
-		int key_return_value = fread(key, key_sz, 1, stream); /* this is used to force a sequence point */
-		
-		if((key_return_value & fread(value, value_sz, 1, stream)) != 1)
-			return i;
-		
-		if(hash_map_fast_put(map, key, value))
-			return i;
-	}
-	
 	return i;
 }
 
@@ -170,7 +129,7 @@ int hash_map_custom_write(FILE* stream, hash_map* map, int(* write_fn)(FILE* str
 	return i;
 }
 
-int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void** key, void** value))
+int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* stream, void** key, void** value), unsigned short int flags)
 {
 	unsigned long int i,
 		element_ct;
@@ -200,7 +159,7 @@ int hash_map_custom_read(FILE* stream, hash_map* map, int(* read_fn)(FILE* strea
 		if(read_fn(stream, key, value) != 1)
 			return i;
 		
-		if(hash_map_put(map, *key, *value))
+		if(hash_map_put(map, *key, *value, flags))
 			return i;
 
 		free(key);

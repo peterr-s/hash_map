@@ -15,9 +15,9 @@ extern "C"
 #define DEFAULT_LOAD_FACTOR 0.75
 #define DEFAULT_LEN 10
 
-#define put hash_map_put
-#define get hash_map_get
-#define drop hash_map_drop
+#define HM_NORMAL 0
+#define HM_FAST 1
+#define HM_DESTROY 2
 
 /* stdbool.h is not required by C89 */
 typedef unsigned char bool;
@@ -44,17 +44,11 @@ struct hash_map
 };
 
 short int hash_map_init(hash_map* map, unsigned long int(* hash_fn)(void* key), bool(* eq_fn)(void* p1, void* p2), unsigned long int start_len, float load_factor);
-void hash_map_destroy(hash_map* map);
+void hash_map_destroy(hash_map* map, unsigned short int flags);
 
-short int hash_map_put(hash_map* map, void* key, void* value);
-short int hash_map_put_destroy(hash_map* map, void* key, void* value);
-void* hash_map_get(hash_map* map, void* key);
-short int hash_map_drop(hash_map* map, void* key);
-
-short int hash_map_fast_put(hash_map* map, void* key, void* value);
-short int hash_map_fast_put_destroy(hash_map* map, void* key, void* value);
-void* hash_map_fast_get(hash_map* map, void* key);
-short int hash_map_fast_drop(hash_map* map, void* key);
+short int hash_map_put(hash_map* map, void* key, void* value, unsigned short int flags);
+void* hash_map_get(hash_map* map, void* key, unsigned short int flags);
+short int hash_map_drop(hash_map* map, void* key, unsigned short int flags);
 
 unsigned long int default_hash(void* key);
 unsigned long int string_hash(void* key);
