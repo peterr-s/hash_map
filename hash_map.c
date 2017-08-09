@@ -123,7 +123,7 @@ void* hash_map_get(hash_map* map, void* key, unsigned short int flags)
 	return NULL;
 }
 
-/* removes an item from the hashmap if present (else no-op) */
+/* removes an item from the hash map if present (else no-op) */
 short int hash_map_drop(hash_map* map, void* key, unsigned short int flags)
 {
 	node* current,
@@ -200,7 +200,7 @@ short int hash_map_drop(hash_map* map, void* key, unsigned short int flags)
 	return HM_W_NOTFOUND;
 }
 
-/* destroys a hashmap (does not touch pointed data) */
+/* destroys a hash map (does not touch pointed data) */
 void hash_map_destroy(hash_map* map, unsigned short int flags)
 {
 	unsigned long int i;
