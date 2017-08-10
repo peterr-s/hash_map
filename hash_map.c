@@ -91,7 +91,10 @@ short int hash_map_put(hash_map* map, void* key, void* value, unsigned short int
 	/* create a new node to hold data */
 	n_node = malloc(sizeof(node));
 	if(!n_node)
+	{
+		map->element_ct --;
 		return HM_ERR_ALLOC;
+	}
 	n_node->key = key;
 	n_node->value = value;
 	n_node->next = map->table[node_idx];
@@ -156,7 +159,10 @@ short int hash_map_drop(hash_map* map, void* key, unsigned short int flags)
 				size_t n_len = map->table_len >> 1;
 				node** temp = calloc(n_len, sizeof(node*));
 				if(!temp)
+				{
+					map->element_ct --;
 					return HM_ERR_ALLOC;
+				}
 				
 				/* for each element in the table */
 				for(i = 0; i < map->table_len; i ++)
