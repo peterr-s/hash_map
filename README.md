@@ -39,6 +39,8 @@ note that `table` should then be a zero-filled array of length `table_len`.
 
 ##### Flags
 
+`HM_NORMAL`. For use in case neither fast nor destroy variants are required.
+
 `HM_FAST`. Because there might be cases where the hash function is faster than the equality function and has a very low chance of collisions, this specifies that the function should use hash equality instead of strict equality. This also saves one hash function call when compared to using something like
 
 	unsigned long eq(void* p1, void* p2)
