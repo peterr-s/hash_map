@@ -72,7 +72,7 @@ There are also five I/O functions added in hash\_map\_io.h, separately from the 
 
 `hash_map_custom_write` takes a pointer to a stream, a pointer to a hash map, and a pointer to a write function. It returns the same values as `hash_map_write`.
 
-`hash_map_custom_read` takes a pointer to a stream, a pointer to a hash map, a pointer to a read function, and flags for `hash_map_put`. It returns the same values as `hash_map_write`.
+`hash_map_custom_read` takes a pointer to a stream, a pointer to a hash map, a pointer to a read function, and flags for `hash_map_put`. It returns the same values as `hash_map_read`.
 
 ##### Externally Defined I/O Functions
 
